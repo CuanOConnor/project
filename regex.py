@@ -24,7 +24,6 @@ class Frag:
         self.start = start
         self.accept = accept
 
-
 def shunt(infix):
     # Convert input to a stack-ish list (LIFO)
     infix = list(infix) [::-1]
@@ -75,15 +74,12 @@ def shunt(infix):
     # Join the elements of the list, convert them to strings
     return ''.join(postfix)
 
-
-
-def regex_compile(infix):
+def compile(infix):
     postfix = shunt(infix)
     postfix = list(postfix)[::-1]# convert to a list
 
     # will keep track of all fragments created from postfix regex
     nfa_stack = []
-
 
     while postfix:
         # loop through reg expression
@@ -125,10 +121,21 @@ def regex_compile(infix):
         # Push the new NFA to the NFA stack
         nfa_stack.append(newfrag)
 
-
     # The NFA stack should have exactly one NFA on it.
     return nfa_stack.pop()
 
+# Add a state to a set and follow all of the e(psilon) arrows.
+def followes(state, current):
+    # Only do something when we havent already seen the state.
+    if state not in current:
+        # Put the state itself in current.
+        current.add(state)
+        # See whether state is labelled by e(psilon).
+        if state.label is None:
+            # Loop through the states pointed to by this state.
+            for x in state.edges:
+                # Follow all of their e(psilon)s too.
+                followes(x, current)
 
 def match(regex, s):
     # This function will return True if and only if the regular expression
@@ -136,8 +143,31 @@ def match(regex, s):
 
     # NFA is Non-deterministic finite automata
     # Compile the regular expression into an NFA.
-    nfa = regex_compile(regex)
+    nfa = compile(regex)
+    # Try to match the regular expression to the string s.
+    # Current set of states.
+    current = set()
+    # Add the first state, and follow all e(psilon) arrows.
+    followes(nfa.start, current)
+    # Previous set of states.
+    previous = set()
+
+    # loop through characters in s.
+    for c in s:
+        # keep track of where we were.
+        previous = current
+        # Create a new empty set for states we're about to be in.
+        current = set()
+        # Loop through the previous states
+        for state in previous:
+            # Only folow arrow not labelled by e(psilon).
+            if state.label is not None:
+                # If the label of the state is equal to the character we've read:
+                if state.label == c:
+                    # Add the state at the end of the arrow to current
+                    followes(state.edges[0], current)
+
     # Ask the NFA if it matches the string s.
-    return nfa
+    return nfa.accept in current
 
 print(match("a.b|b*", "bbbbbbbbbbb"))
