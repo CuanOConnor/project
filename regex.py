@@ -178,21 +178,3 @@ def match(regex, s):
 
     # Ask the NFA if it matches the string s.
     return nfa.accept in current
-
-"""
-Testing potential expression strings
-Uses assert to print an error on fail
-"""
-if __name__ == "__main__":
-    tests = [
-        ["a.b|b*", "bbbbbb", True],
-        ["a.b|b*", "bbx", False],
-        ["a.b", "ab", True],
-        ["b**", "b", True]
-    ]
-
-    for test in tests:
-        assert match(test[0], test[1]) == test[2], test[0] + \
-                (" should match " if test[2] else " should not match ") + test[1]
-    #assert match("a.b|b*", "bbbbbb"), "a.b|b* should match bbbbbb"
-    #assert match("a.b|b*", "bbbbbbbbbbx"), "a.b|b* should not match bbbbbbbbbbx"
