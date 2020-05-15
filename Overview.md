@@ -109,6 +109,7 @@ Is an NFA (a non-deterministic finite automaton) fragment with a start and accep
 Below is a simple Diagram of the anatomy of an NFA.
 - Each one is a potential regular expression and its corresponding diagram.
 - It shows the transitions through the NFA and how it is resolved.
+- This is a good visual guide for how our program will process the NFA.
 
 ![Example NFA Diagram](https://github.com/G00300230/project/blob/master/NFADiagram.png)
 
